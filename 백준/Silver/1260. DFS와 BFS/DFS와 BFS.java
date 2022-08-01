@@ -1,66 +1,95 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
 public class Main {
-    static boolean visited[];
+
+    static int node;
+    static int edge;
+    static int start;
+
     static ArrayList<Integer>[] A;
-    
+
+    static boolean visited[];
+    static Queue<Integer> Q;
+
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        int nodeCount = scan.nextInt();
-        int edgeCount = scan.nextInt();
-        int startNode = scan.nextInt();
+        Scanner sc = new Scanner(System.in);
+
+        node = sc.nextInt();
+        edge = sc.nextInt();
+        start = sc.nextInt();
         
-        A = new ArrayList[nodeCount + 1];
-        for (int i = 1; i <= nodeCount; i++) {
+        A = new ArrayList[node+1];
+        Q = new LinkedList<>();
+
+        // 각 노드 배열 초기화하기
+        for (int i = 1; i <= node; i++) {
             A[i] = new ArrayList<Integer>();
         }
-        
-        for (int i = 0; i < edgeCount; i++) {
-            int node1 = scan.nextInt();
-            int node2 = scan.nextInt();
-            A[node1].add(node2);
-            A[node2].add(node1);
+
+        // 노드 연결된 값 추가
+        for (int i = 0; i < edge; i++) {
+            int S = sc.nextInt();
+            int E = sc.nextInt();
+            A[S].add(E);
+            A[E].add(S);
         }
-        
-        for (int i = 1; i <= nodeCount; i++) {
+
+        // 인접 리스트 정렬하기
+        for (int i = 1; i <= node; i++) {
             Collections.sort(A[i]);
         }
-        
-        visited = new boolean[nodeCount + 1];
-        DFS(startNode);
-        System.out.println();
-        
-        visited = new boolean[nodeCount + 1];
-        BFS(startNode);
-        System.out.println();
-        
+
+        // DFS
+        // 재귀 함수
+        visited = new boolean[node + 1];
+        DFS(start);
+
+        System.out.print("\n");
+
+        // BFS
+        visited = new boolean[node + 1];
+        Q.add(start);
+        visited[start] = true;
+        BFS(start);
+
+
     }
-    
-    public static void DFS(int Node) {
-        System.out.print(Node + " ");
-        visited[Node] = true;
-        
-        for (int i : A[Node]) {
-            if(!visited[i]) {
-                DFS(i);
-            }
+
+    // stack 과 재귀함수
+    public static void DFS(int i) {
+
+        if (visited[i]) { // 방문 함
+            return;
+        }
+        else {
+            visited[i] = true;
+            System.out.print(i + " ");
+        }
+
+        for (int k : A[i]) {
+            DFS(k);
         }
     }
-    
-    private static void BFS(int Node) {
-        Queue<Integer> queue = new LinkedList<Integer>();
-        queue.add(Node);
-        visited[Node] = true;
-        
-        while (!queue.isEmpty()) {
-            int now_Node = queue.poll();
-            System.out.print(now_Node + " ");
-            for (int i : A[now_Node]) {
-                if (!visited[i]) {
-                    visited[i] = true;
-                    queue.add(i);
-                }
+
+    public static void BFS(int i) {
+
+
+        for (int k : A[i]) {
+            if (!visited[k]) { // 방문 아직 안했으면 출력하기
+//                System.out.print(k + " ");
+                Q.add(k);
+                visited[k] = true;
             }
         }
+        if (!Q.isEmpty()) {
+            int now = Q.poll();
+            System.out.print(now + " ");
+            BFS(now);
+        }
     }
+
 }
